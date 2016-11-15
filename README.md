@@ -82,3 +82,8 @@ func main() {
 
 }
 ```
+
+The resulting image looks like this
+
+![plot](https://cloud.githubusercontent.com/assets/1739/20315401/f6e90eae-ab1a-11e6-94a6-4d8418e3a814.png "example plot")
+
