@@ -33,6 +33,8 @@ Example
 -------
 
 This examples shows common use of the library and demonstrates saving to an HTML file.
+In many cases, the user will want to use the output of `json.Marshal(chart)` as they
+need.
 
 ```Go
 package main
