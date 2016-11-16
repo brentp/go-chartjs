@@ -149,8 +149,15 @@ func TestMultipleCharts(t *testing.T) {
 
 	chart := Chart{Type: Line, Label: "test-chart"}
 	chart.AddXAxis(Axis{Type: Linear, Position: Bottom, ScaleLabel: &ScaleLabel{FontSize: 22, LabelString: "X", Display: True}})
-	d1.YAxisID = chart.AddYAxis(Axis{Type: Linear, Position: Left, ScaleLabel: &ScaleLabel{LabelString: "sin(x)", Display: True}})
-	d2.YAxisID = chart.AddYAxis(Axis{Type: Linear, Position: Right, ScaleLabel: &ScaleLabel{LabelString: "2 * cos(x)", Display: True}})
+	var err error
+	d1.YAxisID, err = chart.AddYAxis(Axis{Type: Linear, Position: Left, ScaleLabel: &ScaleLabel{LabelString: "sin(x)", Display: True}})
+	if err != nil {
+		t.Fatalf("error adding axis: %s", err)
+	}
+	d2.YAxisID, err = chart.AddYAxis(Axis{Type: Linear, Position: Right, ScaleLabel: &ScaleLabel{LabelString: "2 * cos(x)", Display: True}})
+	if err != nil {
+		t.Fatalf("error adding axis: %s", err)
+	}
 
 	chart.AddDataset(d2)
 	chart.AddDataset(d1)

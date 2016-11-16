@@ -46,7 +46,7 @@ type Values interface {
 	Xs() []float64
 	// Optional Y values.
 	Ys() []float64
-	// Rs are used for chartType `Bubble`
+	// Rs are used to size points for chartType `Bubble`
 	Rs() []float64
 }
 
@@ -106,6 +106,39 @@ func marshalValuesJSON(v Values) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+// shape indicates the type of marker used for plotting.
+type shape int
+
+var shapes = []string{
+	"",
+	"circle",
+	"triangle",
+	"rect",
+	"rectRot",
+	"cross",
+	"crossRot",
+	"star",
+	"line",
+	"dash",
+}
+
+const (
+	empty = iota
+	Circle
+	Triangle
+	Rect
+	RectRot
+	Cross
+	CrossRot
+	Star
+	LinePoint
+	Dash
+)
+
+func (s shape) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + shapes[s] + `"`), nil
+}
+
 // Dataset wraps the "dataset" JSON
 type Dataset struct {
 	Data            Values    `json:"-"`
@@ -121,10 +154,12 @@ type Dataset struct {
 	Fill        Bool    `json:"fill,omitempty"`
 	LineTension float64 `json:"lineTension,omitempty"`
 
-	PointBackgroundColor *RGBA   `json:"pointBackgroundColor,omitempty"`
-	PointBorderColor     *RGBA   `json:"pointBorderColor,omitempty"`
-	PointBorderWidth     int     `json:"pointBorderWidth,omitempty"`
-	PointRadius          float64 `json:"pointRadius,omitempty"`
+	PointBackgroundColor  *RGBA   `json:"pointBackgroundColor,omitempty"`
+	PointBorderColor      *RGBA   `json:"pointBorderColor,omitempty"`
+	PointBorderWidth      int     `json:"pointBorderWidth,omitempty"`
+	PointRadius           float64 `json:"pointRadius,omitempty"`
+	PointHoverBorderColor *RGBA   `json:"pointHoverBorderColor,omitempty"`
+	PointStyle            shape   `json:"pointStyle,omitempty"`
 
 	ShowLine Bool `json:"showLine,omitempty"`
 	SpanGaps Bool `json:"spanGaps,omitempty"`
@@ -293,19 +328,25 @@ func (c *Chart) AddDataset(d Dataset) {
 }
 
 // AddXAxis adds an x-axis to the chart and returns the ID of the added axis.
-func (c *Chart) AddXAxis(x Axis) string {
+func (c *Chart) AddXAxis(x Axis) (string, error) {
 	if x.ID == "" {
 		x.ID = fmt.Sprintf("xaxis%d", len(c.Options.Scales.XAxes))
 	}
+	if x.Position == Left || x.Position == Right {
+		return "", fmt.Errorf("chart: added x-axis to left or right")
+	}
 	c.Options.Scales.XAxes = append(c.Options.Scales.XAxes, x)
-	return x.ID
+	return x.ID, nil
 }
 
 // AddYAxis adds an y-axis to the chart and return the ID of the added axis.
-func (c *Chart) AddYAxis(y Axis) string {
+func (c *Chart) AddYAxis(y Axis) (string, error) {
 	if y.ID == "" {
 		y.ID = fmt.Sprintf("yaxis%d", len(c.Options.Scales.YAxes))
 	}
+	if y.Position == Top || y.Position == Bottom {
+		return "", fmt.Errorf("chart: added y-axis to top or bottom")
+	}
 	c.Options.Scales.YAxes = append(c.Options.Scales.YAxes, y)
-	return y.ID
+	return y.ID, nil
 }
