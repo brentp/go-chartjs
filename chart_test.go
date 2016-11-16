@@ -119,3 +119,50 @@ func TestHTML(t *testing.T) {
 	}
 	wtr.Close()
 }
+
+func TestMultipleCharts(t *testing.T) {
+	var xys1 xy
+	var xys2 xy
+
+	for i := float64(0); i < 9; i += 0.1 {
+		xys1.x = append(xys1.x, float64(i))
+		xys2.x = append(xys2.x, float64(i))
+
+		xys1.y = append(xys1.y, math.Sin(float64(i)))
+
+		xys2.y = append(xys2.y, 2*math.Cos(float64(i)))
+
+	}
+
+	// a set of colors to work with.
+	colors := []*RGBA{
+		&RGBA{102, 194, 165, 220},
+		&RGBA{250, 141, 98, 220},
+		&RGBA{141, 159, 202, 220},
+		&RGBA{230, 138, 195, 220},
+	}
+
+	d1 := Dataset{Data: xys1, BorderColor: colors[0], Label: "sin(x)", Fill: False,
+		PointRadius: 10, PointBorderWidth: 4, BackgroundColor: colors[1]}
+
+	d2 := Dataset{Data: xys2, BorderWidth: 8, BorderColor: colors[2], Label: "2 * cos(x)", Fill: False}
+
+	chart := Chart{Type: Line, Label: "test-chart"}
+	chart.AddXAxis(Axis{Type: Linear, Position: Bottom, ScaleLabel: &ScaleLabel{FontSize: 22, LabelString: "X", Display: True}})
+	d1.YAxisID = chart.AddYAxis(Axis{Type: Linear, Position: Left, ScaleLabel: &ScaleLabel{LabelString: "sin(x)", Display: True}})
+	d2.YAxisID = chart.AddYAxis(Axis{Type: Linear, Position: Right, ScaleLabel: &ScaleLabel{LabelString: "2 * cos(x)", Display: True}})
+
+	chart.AddDataset(d2)
+	chart.AddDataset(d1)
+
+	chart.Options.Responsive = False
+
+	wtr, err := os.Create("test-chartjs-multi.html")
+	if err != nil {
+		t.Fatalf("error opening file: %+v", err)
+	}
+	if err := chart.SaveHTML(wtr, nil); err != nil {
+		t.Fatalf("error saving chart: %+v", err)
+	}
+	wtr.Close()
+}

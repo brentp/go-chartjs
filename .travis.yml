@@ -7,3 +7,4 @@ go:
 
 script:
     - go test
+    - for d in examples/*; do echo $d; go run $d/main.go ; done

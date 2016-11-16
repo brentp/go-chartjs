@@ -111,15 +111,27 @@ type Dataset struct {
 	Data            Values    `json:"-"`
 	Type            chartType `json:"type,omitempty"`
 	BackgroundColor *RGBA     `json:"backgroundColor,omitempty"`
-	BorderColor     *RGBA     `json:"borderColor,omitempty"`
+	// BorderColor is the color of the line.
+	BorderColor *RGBA `json:"borderColor,omitempty"`
+	// BorderWidth is the width of the line.
+	BorderWidth int `json:"borderWidth,omitempty"`
 
 	// Label indicates the name of the dataset to be shown in the legend.
 	Label       string  `json:"label,omitempty"`
 	Fill        Bool    `json:"fill,omitempty"`
 	LineTension float64 `json:"lineTension,omitempty"`
-	PointRadius float64 `json:"pointRadius,omitempty"`
-	ShowLine    Bool    `json:"showLine,omitempty"`
-	SpanGaps    Bool    `json:"spanGaps,omitempty"`
+
+	PointBackgroundColor *RGBA   `json:"pointBackgroundColor,omitempty"`
+	PointBorderColor     *RGBA   `json:"pointBorderColor,omitempty"`
+	PointBorderWidth     int     `json:"pointBorderWidth,omitempty"`
+	PointRadius          float64 `json:"pointRadius,omitempty"`
+
+	ShowLine Bool `json:"showLine,omitempty"`
+	SpanGaps Bool `json:"spanGaps,omitempty"`
+
+	// Axis ID that matches the ID on the Axis where this dataset is to be drawn.
+	XAxisID string `json:"xAxisID,omitempty"`
+	YAxisID string `json:"yAxisID,omitempty"`
 }
 
 // MarshalJSON implements json.Marshaler interface.
@@ -197,18 +209,22 @@ var axisPositions = []string{
 }
 
 func (p axisPosition) MarshalJSON() ([]byte, error) {
-	return []byte("\"" + axisPositions[p] + "\""), nil
+	return []byte(`"` + axisPositions[p] + `"`), nil
 }
 
 // Bool is a convenience typedef for pointer to bool so that we can differentiate between unset
 // and false.
 type Bool *bool
 
-var t = true
-var f = false
+var (
+	t = true
+	f = false
+	// True is a convenience for pointer to true
+	True = Bool(&t)
 
-var True = Bool(&t)
-var False = Bool(&f)
+	// False is a convenience for pointer to false
+	False = Bool(&f)
+)
 
 // Axis corresponds to 'scale' in chart.js lingo.
 type Axis struct {
@@ -220,7 +236,19 @@ type Axis struct {
 	Stacked   Bool         `json:"stacked,omitempty"`
 
 	// need to differentiate between false and empty to use a pointer
-	Display Bool `json:"display,omitempty"`
+	Display    Bool        `json:"display,omitempty"`
+	ScaleLabel *ScaleLabel `json:"scaleLabel,omitempty"`
+}
+
+// ScaleLabel corresponds to scale title.
+// Display: True must be specified for this to be shown.
+type ScaleLabel struct {
+	Display     Bool   `json:"display,omitempty"`
+	LabelString string `json:"labelString,omitempty"`
+	FontColor   *RGBA  `json:"fontColor,omitempty"`
+	FontFamily  string `json:"fontFamily,omitempty"`
+	FontSize    int    `json:"fontSize,omitempty"`
+	FontStyle   string `json:"fontStyle,omitempty"`
 }
 
 // Axes holds the X and Y axies. Its simpler to use Chart.AddXAxis, Chart.AddYAxis.
@@ -251,6 +279,7 @@ type Options struct {
 	Scales Axes `json:"scales,omitempty"`
 }
 
+// Chart is the top-level type from chartjs.
 type Chart struct {
 	Type    chartType `json:"type"`
 	Label   string    `json:"label,omitempty"`
@@ -263,12 +292,20 @@ func (c *Chart) AddDataset(d Dataset) {
 	c.Data.Datasets = append(c.Data.Datasets, d)
 }
 
-// AddXAxis adds an x-axis to the chart.
-func (c *Chart) AddXAxis(x Axis) {
+// AddXAxis adds an x-axis to the chart and returns the ID of the added axis.
+func (c *Chart) AddXAxis(x Axis) string {
+	if x.ID == "" {
+		x.ID = fmt.Sprintf("xaxis%d", len(c.Options.Scales.XAxes))
+	}
 	c.Options.Scales.XAxes = append(c.Options.Scales.XAxes, x)
+	return x.ID
 }
 
-// AddYAxis adds an y-axis to the chart.
-func (c *Chart) AddYAxis(y Axis) {
+// AddYAxis adds an y-axis to the chart and return the ID of the added axis.
+func (c *Chart) AddYAxis(y Axis) string {
+	if y.ID == "" {
+		y.ID = fmt.Sprintf("yaxis%d", len(c.Options.Scales.YAxes))
+	}
 	c.Options.Scales.YAxes = append(c.Options.Scales.YAxes, y)
+	return y.ID
 }
