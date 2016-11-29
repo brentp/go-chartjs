@@ -5,16 +5,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"image/color"
+
+	"github.com/brentp/go-chartjs/annotation"
+	"github.com/brentp/go-chartjs/types"
 )
 
-// RGBA amends image/color.RGBA to have a MarshalJSON that meets the expectations of chartjs.
-type RGBA color.RGBA
-
-// MarshalJSON satisfies the json.Marshaler interface.
-func (c RGBA) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf("\"rgba(%d, %d, %d, %.3f)\"", c.R, c.G, c.B, float64(c.A)/255)), nil
-}
+var True = types.True
+var False = types.False
 
 var chartTypes = [...]string{
 	"line",
@@ -141,28 +138,28 @@ func (s shape) MarshalJSON() ([]byte, error) {
 
 // Dataset wraps the "dataset" JSON
 type Dataset struct {
-	Data            Values    `json:"-"`
-	Type            chartType `json:"type,omitempty"`
-	BackgroundColor *RGBA     `json:"backgroundColor,omitempty"`
+	Data            Values      `json:"-"`
+	Type            chartType   `json:"type,omitempty"`
+	BackgroundColor *types.RGBA `json:"backgroundColor,omitempty"`
 	// BorderColor is the color of the line.
-	BorderColor *RGBA `json:"borderColor,omitempty"`
+	BorderColor *types.RGBA `json:"borderColor,omitempty"`
 	// BorderWidth is the width of the line.
 	BorderWidth int `json:"borderWidth,omitempty"`
 
 	// Label indicates the name of the dataset to be shown in the legend.
-	Label       string  `json:"label,omitempty"`
-	Fill        Bool    `json:"fill,omitempty"`
-	LineTension float64 `json:"lineTension,omitempty"`
+	Label       string     `json:"label,omitempty"`
+	Fill        types.Bool `json:"fill,omitempty"`
+	LineTension float64    `json:"lineTension,omitempty"`
 
-	PointBackgroundColor  *RGBA   `json:"pointBackgroundColor,omitempty"`
-	PointBorderColor      *RGBA   `json:"pointBorderColor,omitempty"`
-	PointBorderWidth      int     `json:"pointBorderWidth,omitempty"`
-	PointRadius           float64 `json:"pointRadius,omitempty"`
-	PointHoverBorderColor *RGBA   `json:"pointHoverBorderColor,omitempty"`
-	PointStyle            shape   `json:"pointStyle,omitempty"`
+	PointBackgroundColor  *types.RGBA `json:"pointBackgroundColor,omitempty"`
+	PointBorderColor      *types.RGBA `json:"pointBorderColor,omitempty"`
+	PointBorderWidth      int         `json:"pointBorderWidth,omitempty"`
+	PointRadius           float64     `json:"pointRadius,omitempty"`
+	PointHoverBorderColor *types.RGBA `json:"pointHoverBorderColor,omitempty"`
+	PointStyle            shape       `json:"pointStyle,omitempty"`
 
-	ShowLine Bool `json:"showLine,omitempty"`
-	SpanGaps Bool `json:"spanGaps,omitempty"`
+	ShowLine types.Bool `json:"showLine,omitempty"`
+	SpanGaps types.Bool `json:"spanGaps,omitempty"`
 
 	// Axis ID that matches the ID on the Axis where this dataset is to be drawn.
 	XAxisID string `json:"xAxisID,omitempty"`
@@ -247,43 +244,29 @@ func (p axisPosition) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + axisPositions[p] + `"`), nil
 }
 
-// Bool is a convenience typedef for pointer to bool so that we can differentiate between unset
-// and false.
-type Bool *bool
-
-var (
-	t = true
-	f = false
-	// True is a convenience for pointer to true
-	True = Bool(&t)
-
-	// False is a convenience for pointer to false
-	False = Bool(&f)
-)
-
 // Axis corresponds to 'scale' in chart.js lingo.
 type Axis struct {
 	Type      axisType     `json:"type"`
 	Position  axisPosition `json:"position,omitempty"`
 	Label     string       `json:"label,omitempty"`
 	ID        string       `json:"id,omitempty"`
-	GridLines Bool         `json:"gridLine,omitempty"`
-	Stacked   Bool         `json:"stacked,omitempty"`
+	GridLines types.Bool   `json:"gridLine,omitempty"`
+	Stacked   types.Bool   `json:"stacked,omitempty"`
 
 	// need to differentiate between false and empty to use a pointer
-	Display    Bool        `json:"display,omitempty"`
+	Display    types.Bool  `json:"display,omitempty"`
 	ScaleLabel *ScaleLabel `json:"scaleLabel,omitempty"`
 }
 
 // ScaleLabel corresponds to scale title.
 // Display: True must be specified for this to be shown.
 type ScaleLabel struct {
-	Display     Bool   `json:"display,omitempty"`
-	LabelString string `json:"labelString,omitempty"`
-	FontColor   *RGBA  `json:"fontColor,omitempty"`
-	FontFamily  string `json:"fontFamily,omitempty"`
-	FontSize    int    `json:"fontSize,omitempty"`
-	FontStyle   string `json:"fontStyle,omitempty"`
+	Display     types.Bool  `json:"display,omitempty"`
+	LabelString string      `json:"labelString,omitempty"`
+	FontColor   *types.RGBA `json:"fontColor,omitempty"`
+	FontFamily  string      `json:"fontFamily,omitempty"`
+	FontSize    int         `json:"fontSize,omitempty"`
+	FontStyle   string      `json:"fontStyle,omitempty"`
 }
 
 // Axes holds the X and Y axies. Its simpler to use Chart.AddXAxis, Chart.AddYAxis.
@@ -304,14 +287,19 @@ func (a *Axes) AddY(y Axis) {
 
 // Option wraps the chartjs "option"
 type Option struct {
-	Responsive          Bool `json:"responsive,omitempty"`
-	MaintainAspectRatio Bool `json:"maintainAspectRatio,omitempty"`
+	Responsive          types.Bool `json:"responsive,omitempty"`
+	MaintainAspectRatio types.Bool `json:"maintainAspectRatio,omitempty"`
+}
+
+type Annotation struct {
+	Annotations []annotation.Annotation `json:"annotations,omitempty"`
 }
 
 // Options wraps the chartjs "options"
 type Options struct {
 	Option
-	Scales Axes `json:"scales,omitempty"`
+	Scales     Axes       `json:"scales,omitempty"`
+	Annotation Annotation `json:"annotation,omitempty"`
 }
 
 // Chart is the top-level type from chartjs.

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"html/template"
 	"io"
+
+	"github.com/brentp/go-chartjs/annotation"
 )
 
 // this file implements some syntactic sugar for creating charts
@@ -19,6 +21,9 @@ const tmpl = `<!DOCTYPE html>
     <head>
 		<script src="{{ index . "JQuery" }}"></script>
 		<script src="{{ index . "ChartJS" }}"></script>
+		<script>
+		{{ index . "extra"}}
+		</script>
     </head>
     <body>
         <canvas id="canvas" height="{{ index . "height" }}" width="{{ index . "width" }}"></canvas>
@@ -52,6 +57,7 @@ func (c Chart) SaveHTML(w io.Writer, tmap map[string]interface{}) error {
 	if _, ok := tmap["ChartJS"]; !ok {
 		tmap["ChartJS"] = ChartJS
 	}
+	tmap["extra"] = template.JS(annotation.AnnotationSrc043)
 
 	t, err := template.New("chartjs").Parse(tmpl)
 	if err != nil {

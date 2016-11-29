@@ -6,6 +6,7 @@ import (
 	"os"
 
 	chartjs "github.com/brentp/go-chartjs"
+	"github.com/brentp/go-chartjs/types"
 )
 
 type xy struct {
@@ -44,11 +45,11 @@ func main() {
 	}
 
 	// a set of colors to work with.
-	colors := []*chartjs.RGBA{
-		&chartjs.RGBA{102, 194, 165, 220},
-		&chartjs.RGBA{250, 141, 98, 220},
-		&chartjs.RGBA{141, 159, 202, 220},
-		&chartjs.RGBA{230, 138, 195, 220},
+	colors := []*types.RGBA{
+		&types.RGBA{102, 194, 165, 220},
+		&types.RGBA{250, 141, 98, 220},
+		&types.RGBA{141, 159, 202, 220},
+		&types.RGBA{230, 138, 195, 220},
 	}
 
 	// a Dataset contains the data and styling info.

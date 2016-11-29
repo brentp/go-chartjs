@@ -7,6 +7,9 @@ import (
 	"os"
 	"strconv"
 	"testing"
+
+	"github.com/brentp/go-chartjs/annotation"
+	"github.com/brentp/go-chartjs/types"
 )
 
 type xy struct {
@@ -38,7 +41,7 @@ func TestLine(t *testing.T) {
 		xys.r = append(xys.r, float64(i))
 	}
 
-	d := Dataset{Data: xys, BackgroundColor: &RGBA{0, 255, 0, 200}, Label: "HHIHIHI"}
+	d := Dataset{Data: xys, BackgroundColor: &types.RGBA{0, 255, 0, 200}, Label: "HHIHIHI"}
 
 	//options := Options{Scales: axes}
 	//options.Responsive = true
@@ -69,7 +72,7 @@ func TestBar(t *testing.T) {
 		xs.x = append(xs.x, float64(i))
 		labels = append(labels, strconv.Itoa(i))
 	}
-	d := Dataset{Data: xs, BackgroundColor: &RGBA{0, 255, 0, 200}}
+	d := Dataset{Data: xs, BackgroundColor: &types.RGBA{0, 255, 0, 200}}
 
 	//options := Options{Scales: axes}
 	//options.Responsive = true
@@ -97,7 +100,7 @@ func TestHTML(t *testing.T) {
 	}
 	fmt.Println(len(xys.x))
 
-	d := Dataset{Data: xys, BackgroundColor: &RGBA{0, 255, 0, 200}, Label: "sin(x)"}
+	d := Dataset{Data: xys, BackgroundColor: &types.RGBA{0, 255, 0, 200}, Label: "sin(x)"}
 
 	//options := Options{Scales: axes}
 	//options.Responsive = true
@@ -108,7 +111,7 @@ func TestHTML(t *testing.T) {
 	chart.AddDataset(d)
 	chart.AddXAxis(Axis{Type: Linear, Position: Bottom})
 	chart.AddYAxis(Axis{Type: Linear, Position: Right})
-	chart.Options.Responsive = False
+	chart.Options.Responsive = types.False
 
 	wtr, err := os.Create("test-chartjs.html")
 	if err != nil {
@@ -135,26 +138,26 @@ func TestMultipleCharts(t *testing.T) {
 	}
 
 	// a set of colors to work with.
-	colors := []*RGBA{
-		&RGBA{102, 194, 165, 220},
-		&RGBA{250, 141, 98, 220},
-		&RGBA{141, 159, 202, 220},
-		&RGBA{230, 138, 195, 220},
+	colors := []*types.RGBA{
+		&types.RGBA{102, 194, 165, 220},
+		&types.RGBA{250, 141, 98, 220},
+		&types.RGBA{141, 159, 202, 220},
+		&types.RGBA{230, 138, 195, 220},
 	}
 
-	d1 := Dataset{Data: xys1, BorderColor: colors[0], Label: "sin(x)", Fill: False,
+	d1 := Dataset{Data: xys1, BorderColor: colors[0], Label: "sin(x)", Fill: types.False,
 		PointRadius: 10, PointBorderWidth: 4, BackgroundColor: colors[1]}
 
-	d2 := Dataset{Data: xys2, BorderWidth: 8, BorderColor: colors[2], Label: "2 * cos(x)", Fill: False}
+	d2 := Dataset{Data: xys2, BorderWidth: 8, BorderColor: colors[2], Label: "2 * cos(x)", Fill: types.False}
 
 	chart := Chart{Type: Line, Label: "test-chart"}
-	chart.AddXAxis(Axis{Type: Linear, Position: Bottom, ScaleLabel: &ScaleLabel{FontSize: 22, LabelString: "X", Display: True}})
+	chart.AddXAxis(Axis{Type: Linear, Position: Bottom, ScaleLabel: &ScaleLabel{FontSize: 22, LabelString: "X", Display: types.True}})
 	var err error
-	d1.YAxisID, err = chart.AddYAxis(Axis{Type: Linear, Position: Left, ScaleLabel: &ScaleLabel{LabelString: "sin(x)", Display: True}})
+	d1.YAxisID, err = chart.AddYAxis(Axis{Type: Linear, Position: Left, ScaleLabel: &ScaleLabel{LabelString: "sin(x)", Display: types.True}})
 	if err != nil {
 		t.Fatalf("error adding axis: %s", err)
 	}
-	d2.YAxisID, err = chart.AddYAxis(Axis{Type: Linear, Position: Right, ScaleLabel: &ScaleLabel{LabelString: "2 * cos(x)", Display: True}})
+	d2.YAxisID, err = chart.AddYAxis(Axis{Type: Linear, Position: Right, ScaleLabel: &ScaleLabel{LabelString: "2 * cos(x)", Display: types.True}})
 	if err != nil {
 		t.Fatalf("error adding axis: %s", err)
 	}
@@ -162,9 +165,45 @@ func TestMultipleCharts(t *testing.T) {
 	chart.AddDataset(d2)
 	chart.AddDataset(d1)
 
-	chart.Options.Responsive = False
+	chart.Options.Responsive = types.False
 
 	wtr, err := os.Create("test-chartjs-multi.html")
+	if err != nil {
+		t.Fatalf("error opening file: %+v", err)
+	}
+	if err := chart.SaveHTML(wtr, nil); err != nil {
+		t.Fatalf("error saving chart: %+v", err)
+	}
+	wtr.Close()
+}
+
+func TestAnno(t *testing.T) {
+
+	var xys xy
+	for i := float64(0); i < 9; i += 0.05 {
+		xys.x = append(xys.x, float64(i))
+		xys.y = append(xys.y, math.Sin(float64(i)))
+		xys.r = append(xys.r, float64(i))
+	}
+
+	d := Dataset{Data: xys, BackgroundColor: &types.RGBA{0, 255, 0, 200}, Label: "sin(x)"}
+
+	//options := Options{Scales: axes}
+	//options.Responsive = true
+	//options.MaintainAspectRatio = false
+
+	chart := Chart{Type: Bubble, Label: "test-chart"}
+	//chart.Data = Data{Datasets: []Dataset{d}}
+	chart.AddDataset(d)
+	axid, _ := chart.AddXAxis(Axis{Type: Linear, Position: Bottom})
+	chart.AddYAxis(Axis{Type: Linear, Position: Right})
+	chart.Options.Responsive = types.False
+
+	chart.Options.Annotation = Annotation{[]annotation.Annotation{annotation.Annotation{Type: annotation.Line, AxisID: axid, Mode: annotation.Vertical,
+		Value: 4, BorderColor: &types.RGBA{255, 0, 0, 200}, BorderWidth: 4, Label: &annotation.Label{FontSize: 12, FontFamily: "sans-serif",
+			Position: "center", BackgroundColor: &types.RGBA{0, 0, 0, 200}, Enabled: types.True, Content: "hello"}}}}
+
+	wtr, err := os.Create("test-chart-anno.html")
 	if err != nil {
 		t.Fatalf("error opening file: %+v", err)
 	}
