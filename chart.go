@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math"
 
 	"github.com/brentp/go-chartjs/annotation"
 	"github.com/brentp/go-chartjs/types"
@@ -62,12 +63,17 @@ func marshalValuesJSON(v Values) ([]byte, error) {
 		if len(xs) != len(ys) || len(xs) != len(rs) {
 			return nil, fmt.Errorf("chart: bad format of Values. All axes must be of the same length")
 		}
+		var err error
 		for i, x := range xs {
 			if i > 0 {
 				buf.WriteRune(',')
 			}
 			y, r := ys[i], rs[i]
-			_, err := buf.WriteString(fmt.Sprintf(("{\"x\":" + FloatFormat + ",\"y\":" + FloatFormat + ",\"r\":" + FloatFormat + "}"), x, y, r))
+			if math.IsNaN(y) {
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + FloatFormat + ",\"y\": null,\"r\":" + FloatFormat + "}"), x, r))
+			} else {
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + FloatFormat + ",\"y\":" + FloatFormat + ",\"r\":" + FloatFormat + "}"), x, y, r))
+			}
 			if err != nil {
 				return nil, err
 			}
@@ -76,12 +82,17 @@ func marshalValuesJSON(v Values) ([]byte, error) {
 		if len(xs) != len(ys) {
 			return nil, fmt.Errorf("chart: bad format of Values. X and Y must be of the same length")
 		}
+		var err error
 		for i, x := range xs {
 			if i > 0 {
 				buf.WriteRune(',')
 			}
 			y := ys[i]
-			_, err := buf.WriteString(fmt.Sprintf(("{\"x\":" + FloatFormat + ",\"y\":" + FloatFormat + "}"), x, y))
+			if math.IsNaN(y) {
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + FloatFormat + ",\"y\": null }"), x))
+			} else {
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + FloatFormat + ",\"y\":" + FloatFormat + "}"), x, y))
+			}
 			if err != nil {
 				return nil, err
 			}
