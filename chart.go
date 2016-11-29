@@ -35,6 +35,24 @@ const (
 	Bubble
 )
 
+type interpMode int
+
+const (
+	_ interpMode = iota
+	InterpMonotone
+	InterpDefault
+)
+
+var interpModes = [...]string{
+	"",
+	"monotone",
+	"default",
+}
+
+func (m interpMode) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + interpModes[m] + `"`), nil
+}
+
 // FloatFormat determines how many decimal places are sent in the JSON.
 var FloatFormat = "%.2f"
 
@@ -158,16 +176,16 @@ type Dataset struct {
 	BorderWidth int `json:"borderWidth,omitempty"`
 
 	// Label indicates the name of the dataset to be shown in the legend.
-	Label       string     `json:"label,omitempty"`
-	Fill        types.Bool `json:"fill,omitempty"`
-	LineTension float64    `json:"lineTension,omitempty"`
-
-	PointBackgroundColor  *types.RGBA `json:"pointBackgroundColor,omitempty"`
-	PointBorderColor      *types.RGBA `json:"pointBorderColor,omitempty"`
-	PointBorderWidth      int         `json:"pointBorderWidth,omitempty"`
-	PointRadius           float64     `json:"pointRadius,omitempty"`
-	PointHoverBorderColor *types.RGBA `json:"pointHoverBorderColor,omitempty"`
-	PointStyle            shape       `json:"pointStyle,omitempty"`
+	Label                  string      `json:"label,omitempty"`
+	Fill                   types.Bool  `json:"fill,omitempty"`
+	LineTension            float64     `json:"lineTension,omitempty"`
+	CubicInterpolationMode interpMode  `json:"cubicInterpolationMode,omitempty"`
+	PointBackgroundColor   *types.RGBA `json:"pointBackgroundColor,omitempty"`
+	PointBorderColor       *types.RGBA `json:"pointBorderColor,omitempty"`
+	PointBorderWidth       int         `json:"pointBorderWidth,omitempty"`
+	PointRadius            float64     `json:"pointRadius,omitempty"`
+	PointHoverBorderColor  *types.RGBA `json:"pointHoverBorderColor,omitempty"`
+	PointStyle             shape       `json:"pointStyle,omitempty"`
 
 	ShowLine types.Bool `json:"showLine,omitempty"`
 	SpanGaps types.Bool `json:"spanGaps,omitempty"`
