@@ -285,6 +285,15 @@ type Axis struct {
 	// need to differentiate between false and empty to use a pointer
 	Display    types.Bool  `json:"display,omitempty"`
 	ScaleLabel *ScaleLabel `json:"scaleLabel,omitempty"`
+	Tick       *Tick       `json:"ticks,omitempty"`
+}
+
+// Tick lets us set the range of the data.
+type Tick struct {
+	Min         float64    `json:"min,omitempty"`
+	Max         float64    `json:"max,omitempty"`
+	BeginAtZero types.Bool `json:"beginAtZero,omitempty"`
+	// TODO: add additional options from: tick options.
 }
 
 // ScaleLabel corresponds to scale title.

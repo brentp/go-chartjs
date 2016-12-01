@@ -549,6 +549,7 @@ const (
 	Box
 )
 
+// MarshalJSON satisfies the jons.Marshaler interface.
 func (a annotationType) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + annotationTypes[a] + `"`), nil
 }
@@ -556,7 +557,9 @@ func (a annotationType) MarshalJSON() ([]byte, error) {
 type annotationMode int
 
 const (
+	// Horizontal Line
 	Horizontal annotationMode = iota
+	// Vertical Line
 	Vertical
 )
 
@@ -569,6 +572,9 @@ func (a annotationMode) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + annotationModes[a] + `"`), nil
 }
 
+// Annotation wraps the chartjs-annotation object. Currently, because of these
+// javascript implementation, some attributes are specific to lines and some area
+// specific to boxes. Those are indicated in-line, below.
 type Annotation struct {
 	Type annotationType `json:"type"`
 
@@ -598,6 +604,7 @@ type Annotation struct {
 	Label *Label `json:"label,omitempty"`
 }
 
+// Label can be used to decorate a `Line` `Annotation` object.
 type Label struct {
 	BackgroundColor *types.RGBA `json:"backgroundColor,omitempty"`
 	FontFamily      string      `json:"fontFamily,omitempty"`
