@@ -26,16 +26,22 @@ const tmpl = `<!DOCTYPE html>
 		</script>
     </head>
     <body>
-        <canvas id="canvas" height="{{ index . "height" }}" width="{{ index . "width" }}"></canvas>
+	{{ $height := index . "height" }}
+	{{ $width := index . "width" }}
+	{{ range $i, $json := index . "charts" }}
+        <canvas id="canvas{{ $i }}" height="{{ $height }}" width="{{ $width }}"></canvas>
+	{{ end }}
     </body>
     <script>
-    var ctx = document.getElementById("canvas").getContext("2d");
-	new Chart(ctx, {{ index . "json" }})
+	{{ range $i, $json := index . "charts" }}
+		var ctx = document.getElementById("canvas{{ $i }}").getContext("2d");
+		new Chart(ctx, {{ $json }})
+	{{ end }}
     </script>
 </html>`
 
-// SaveHTML writes the chart and minimal HTML to an io.Writer.
-func (c Chart) SaveHTML(w io.Writer, tmap map[string]interface{}) error {
+// SaveCharts writes the charts and the required HTML to an io.Writer
+func SaveCharts(w io.Writer, tmap map[string]interface{}, charts ...Chart) error {
 	if tmap == nil {
 		tmap = make(map[string]interface{})
 	}
@@ -46,11 +52,15 @@ func (c Chart) SaveHTML(w io.Writer, tmap map[string]interface{}) error {
 	if _, ok := tmap["width"]; !ok {
 		tmap["width"] = 400
 	}
-	cjson, err := json.Marshal(c)
-	if err != nil {
-		return err
+	jscharts := make([]template.JS, 0, len(charts))
+	for _, c := range charts {
+		cjson, err := json.Marshal(c)
+		if err != nil {
+			return err
+		}
+		jscharts = append(jscharts, template.JS(cjson))
 	}
-	tmap["json"] = template.JS(cjson)
+	tmap["charts"] = jscharts
 	if _, ok := tmap["JQuery"]; !ok {
 		tmap["JQuery"] = JQuery
 	}
@@ -64,4 +74,9 @@ func (c Chart) SaveHTML(w io.Writer, tmap map[string]interface{}) error {
 		return err
 	}
 	return t.Execute(w, tmap)
+}
+
+// SaveHTML writes the chart and minimal HTML to an io.Writer.
+func (c Chart) SaveHTML(w io.Writer, tmap map[string]interface{}) error {
+	return SaveCharts(w, tmap, c)
 }
