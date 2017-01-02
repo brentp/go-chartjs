@@ -33,9 +33,11 @@ const tmpl = `<!DOCTYPE html>
 	{{ end }}
     </body>
     <script>
+	Chart.defaults.line.cubicInterpolationMode = 'monotone'
 	{{ range $i, $json := index . "charts" }}
 		var ctx = document.getElementById("canvas{{ $i }}").getContext("2d");
 		new Chart(ctx, {{ $json }})
+
 	{{ end }}
     </script>
 </html>`
