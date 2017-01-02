@@ -282,7 +282,7 @@ type Axis struct {
 	GridLines types.Bool   `json:"gridLine,omitempty"`
 	Stacked   types.Bool   `json:"stacked,omitempty"`
 
-	// need to differentiate between false and empty to use a pointer
+	// Bool differentiates between false and empty by use of pointer.
 	Display    types.Bool  `json:"display,omitempty"`
 	ScaleLabel *ScaleLabel `json:"scaleLabel,omitempty"`
 	Tick       *Tick       `json:"ticks,omitempty"`
