@@ -176,7 +176,7 @@ type Dataset struct {
 	// BorderColor is the color of the line.
 	BorderColor *types.RGBA `json:"borderColor,omitempty"`
 	// BorderWidth is the width of the line.
-	BorderWidth int `json:"borderWidth,omitempty"`
+	BorderWidth float64 `json:"borderWidth,omitempty"`
 
 	// Label indicates the name of the dataset to be shown in the legend.
 	Label string     `json:"label,omitempty"`
@@ -188,7 +188,7 @@ type Dataset struct {
 	CubicInterpolationMode interpMode  `json:"cubicInterpolationMode,omitempty"`
 	PointBackgroundColor   *types.RGBA `json:"pointBackgroundColor,omitempty"`
 	PointBorderColor       *types.RGBA `json:"pointBorderColor,omitempty"`
-	PointBorderWidth       int         `json:"pointBorderWidth,omitempty"`
+	PointBorderWidth       float64     `json:"pointBorderWidth,omitempty"`
 	PointRadius            float64     `json:"pointRadius"`
 	PointHoverBorderColor  *types.RGBA `json:"pointHoverBorderColor,omitempty"`
 	PointStyle             shape       `json:"pointStyle,omitempty"`
