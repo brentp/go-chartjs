@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"math"
 
 	"github.com/brentp/go-chartjs/annotation"
@@ -176,7 +177,7 @@ type Dataset struct {
 	// BorderColor is the color of the line.
 	BorderColor *types.RGBA `json:"borderColor,omitempty"`
 	// BorderWidth is the width of the line.
-	BorderWidth float64 `json:"borderWidth,omitempty"`
+	BorderWidth float64 `json:"borderWidth"`
 
 	// Label indicates the name of the dataset to be shown in the legend.
 	Label string     `json:"label,omitempty"`
@@ -184,11 +185,11 @@ type Dataset struct {
 
 	// SteppedLine of true means dont interpolate and ignore line tension.
 	SteppedLine            types.Bool  `json:"steppedLine,omitempty"`
-	LineTension            float64     `json:"lineTension,omitempty"`
+	LineTension            float64     `json:"lineTension"`
 	CubicInterpolationMode interpMode  `json:"cubicInterpolationMode,omitempty"`
 	PointBackgroundColor   *types.RGBA `json:"pointBackgroundColor,omitempty"`
 	PointBorderColor       *types.RGBA `json:"pointBorderColor,omitempty"`
-	PointBorderWidth       float64     `json:"pointBorderWidth,omitempty"`
+	PointBorderWidth       float64     `json:"pointBorderWidth"`
 	PointRadius            float64     `json:"pointRadius"`
 	PointHoverBorderColor  *types.RGBA `json:"pointHoverBorderColor,omitempty"`
 	PointStyle             shape       `json:"pointStyle,omitempty"`
@@ -333,6 +334,13 @@ func (a *Axes) AddY(y Axis) {
 type Option struct {
 	Responsive          types.Bool `json:"responsive,omitempty"`
 	MaintainAspectRatio types.Bool `json:"maintainAspectRatio,omitempty"`
+	Title               *Title     `json:"title,omitempty"`
+}
+
+// Title is the Options title
+type Title struct {
+	Display types.Bool `json:"display,omitempty"`
+	Text    string     `json:"text,omitempty"`
 }
 
 type Annotation struct {
@@ -345,6 +353,17 @@ type Options struct {
 	Scales     Axes       `json:"scales,omitempty"`
 	Annotation Annotation `json:"annotation,omitempty"`
 	Legend     *Legend    `json:"legend,omitempty"`
+	Tooltip    *Tooltip   `json:"tooltips,omitempty"`
+}
+
+// Tooltip wraps chartjs "tooltips".
+// TODO: figure out how to make this work.
+type Tooltip struct {
+	Enabled   types.Bool `json:"enabled,omitempty"`
+	Intersect types.Bool `json:"intersect,omitempty"`
+	// TODO: make mode typed by Interaction modes.
+	Mode   string         `json:"mode,omitempty"`
+	Custom template.JSStr `json:"custom,omitempty"`
 }
 
 type Legend struct {

@@ -36,10 +36,13 @@ const tmpl = `<!DOCTYPE html>
     <script>
 	Chart.defaults.line.cubicInterpolationMode = 'monotone';
 	Chart.defaults.global.animation.duration = 0;
+	var charts = []
 	{{ range $i, $json := index . "charts" }}
 		var ctx = document.getElementById("canvas{{ $i }}").getContext("2d");
-		new Chart(ctx, {{ $json }})
+		var chart = new Chart(ctx, {{ $json }});
+		charts.push(chart)
 	{{ end }}
+	{{ index . "custom" }}
     </script>
 </html>`
 
@@ -71,7 +74,9 @@ func SaveCharts(w io.Writer, tmap map[string]interface{}, charts ...Chart) error
 		tmap["ChartJS"] = ChartJS
 	}
 	tmap["extra"] = template.JS(annotation.AnnotationSrc043)
-
+	if _, ok := tmap["custom"]; !ok {
+		tmap["custom"] = ""
+	}
 	t, err := template.New("chartjs").Parse(tmpl)
 	if err != nil {
 		return err
