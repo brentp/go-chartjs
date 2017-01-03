@@ -179,14 +179,17 @@ type Dataset struct {
 	BorderWidth int `json:"borderWidth,omitempty"`
 
 	// Label indicates the name of the dataset to be shown in the legend.
-	Label                  string      `json:"label,omitempty"`
-	Fill                   types.Bool  `json:"fill,omitempty"`
+	Label string     `json:"label,omitempty"`
+	Fill  types.Bool `json:"fill,omitempty"`
+
+	// SteppedLine of true means dont interpolate and ignore line tension.
+	SteppedLine            types.Bool  `json:"steppedLine,omitempty"`
 	LineTension            float64     `json:"lineTension,omitempty"`
 	CubicInterpolationMode interpMode  `json:"cubicInterpolationMode,omitempty"`
 	PointBackgroundColor   *types.RGBA `json:"pointBackgroundColor,omitempty"`
 	PointBorderColor       *types.RGBA `json:"pointBorderColor,omitempty"`
 	PointBorderWidth       int         `json:"pointBorderWidth,omitempty"`
-	PointRadius            float64     `json:"pointRadius,omitempty"`
+	PointRadius            float64     `json:"pointRadius"`
 	PointHoverBorderColor  *types.RGBA `json:"pointHoverBorderColor,omitempty"`
 	PointStyle             shape       `json:"pointStyle,omitempty"`
 
