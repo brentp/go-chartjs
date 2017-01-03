@@ -53,8 +53,11 @@ func (m interpMode) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + interpModes[m] + `"`), nil
 }
 
-// FloatFormat determines how many decimal places are sent in the JSON.
-var FloatFormat = "%.2f"
+// XFloatFormat determines how many decimal places are sent in the JSON for X values.
+var XFloatFormat = "%.2f"
+
+// YFloatFormat determines how many decimal places are sent in the JSON for Y values.
+var YFloatFormat = "%.2f"
 
 // Values dictates the interface of data to be plotted.
 type Values interface {
@@ -88,9 +91,9 @@ func marshalValuesJSON(v Values) ([]byte, error) {
 			}
 			y, r := ys[i], rs[i]
 			if math.IsNaN(y) {
-				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + FloatFormat + ",\"y\": null,\"r\":" + FloatFormat + "}"), x, r))
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + XFloatFormat + ",\"y\": null,\"r\":" + YFloatFormat + "}"), x, r))
 			} else {
-				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + FloatFormat + ",\"y\":" + FloatFormat + ",\"r\":" + FloatFormat + "}"), x, y, r))
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + XFloatFormat + ",\"y\":" + YFloatFormat + ",\"r\":" + YFloatFormat + "}"), x, y, r))
 			}
 			if err != nil {
 				return nil, err
@@ -107,9 +110,9 @@ func marshalValuesJSON(v Values) ([]byte, error) {
 			}
 			y := ys[i]
 			if math.IsNaN(y) {
-				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + FloatFormat + ",\"y\": null }"), x))
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + XFloatFormat + ",\"y\": null }"), x))
 			} else {
-				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + FloatFormat + ",\"y\":" + FloatFormat + "}"), x, y))
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + XFloatFormat + ",\"y\":" + YFloatFormat + "}"), x, y))
 			}
 			if err != nil {
 				return nil, err
@@ -121,7 +124,7 @@ func marshalValuesJSON(v Values) ([]byte, error) {
 			if i > 0 {
 				buf.WriteRune(',')
 			}
-			_, err := buf.WriteString(fmt.Sprintf(FloatFormat, x))
+			_, err := buf.WriteString(fmt.Sprintf(XFloatFormat, x))
 			if err != nil {
 				return nil, err
 			}
@@ -338,6 +341,11 @@ type Options struct {
 	Option
 	Scales     Axes       `json:"scales,omitempty"`
 	Annotation Annotation `json:"annotation,omitempty"`
+	Legend     *Legend    `json:"legend,omitempty"`
+}
+
+type Legend struct {
+	Display types.Bool `json:"display,omitempty"`
 }
 
 // Chart is the top-level type from chartjs.

@@ -30,14 +30,15 @@ const tmpl = `<!DOCTYPE html>
 	{{ $width := index . "width" }}
 	{{ range $i, $json := index . "charts" }}
         <canvas id="canvas{{ $i }}" height="{{ $height }}" width="{{ $width }}"></canvas>
+		<hr>
 	{{ end }}
     </body>
     <script>
-	Chart.defaults.line.cubicInterpolationMode = 'monotone'
+	Chart.defaults.line.cubicInterpolationMode = 'monotone';
+	Chart.defaults.global.animation.duration = 0;
 	{{ range $i, $json := index . "charts" }}
 		var ctx = document.getElementById("canvas{{ $i }}").getContext("2d");
 		new Chart(ctx, {{ $json }})
-
 	{{ end }}
     </script>
 </html>`
