@@ -24,7 +24,8 @@ data to be plotted by chartjs has to meet this interface.
       Xs() []float64
       // Optional Y values.
       Ys() []float64
-      // Rs are used to size points for chartType `Bubble`
+      // Rs are used to size points for chartType `Bubble`. If this returns an
+      // empty slice then it's not used.
       Rs() []float64
   }
 ```
@@ -127,3 +128,11 @@ func main() {
 The resulting html will have an interactive `<canvas>` element that looks like this.
 
 ![plot](https://cloud.githubusercontent.com/assets/1739/20368217/5068a336-ac10-11e6-8d6c-f711c7c71df3.png "example plot")
+
+
+Live Examples
+-------------
+
+[evaluating coverage on high throughput sequencing data](https://brentp.github.io/goleft/indexcov/ex-indexcov-roc.html)
+
+[inferring sex from sequencing coverage on X and Y chroms](https://brentp.github.io/goleft/indexcov/ex-indexcov-sex.html)
