@@ -191,7 +191,10 @@ type Dataset struct {
 	PointBorderColor       *types.RGBA `json:"pointBorderColor,omitempty"`
 	PointBorderWidth       float64     `json:"pointBorderWidth"`
 	PointRadius            float64     `json:"pointRadius"`
+	PointHitRadius         float64     `json:"pointHitRadius"`
+	PointHoverRadius       float64     `json:"pointHoverRadius"`
 	PointHoverBorderColor  *types.RGBA `json:"pointHoverBorderColor,omitempty"`
+	PointHoverBorderWidth  float64     `json:"pointHoverBorderWidth"`
 	PointStyle             shape       `json:"pointStyle,omitempty"`
 
 	ShowLine types.Bool `json:"showLine,omitempty"`
