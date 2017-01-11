@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/brentp/go-chartjs/annotation"
 	"github.com/brentp/go-chartjs/types"
 )
 
@@ -195,21 +194,9 @@ func TestAnno(t *testing.T) {
 	chart := Chart{Type: Bubble, Label: "test-chart"}
 	//chart.Data = Data{Datasets: []Dataset{d}}
 	chart.AddDataset(d)
-	xid, _ := chart.AddXAxis(Axis{Type: Linear, Position: Bottom})
-	yid, _ := chart.AddYAxis(Axis{Type: Linear, Position: Right})
+	chart.AddXAxis(Axis{Type: Linear, Position: Bottom})
+	chart.AddYAxis(Axis{Type: Linear, Position: Right})
 	chart.Options.Responsive = types.False
-
-	chart.Options.Annotation = Annotation{[]annotation.Annotation{annotation.Annotation{Type: annotation.Line, AxisID: xid, Mode: annotation.Vertical,
-		Value: 4, EndValue: 6, BorderColor: &types.RGBA{255, 0, 0, 200}, BorderWidth: 4, Label: &annotation.Label{FontSize: 12, FontFamily: "sans-serif",
-			Position: "center", BackgroundColor: &types.RGBA{0, 0, 0, 200}, Enabled: types.True, Content: "hello"}}}}
-
-	chart.Options.Annotation.Annotations = append(chart.Options.Annotation.Annotations,
-		annotation.Annotation{Type: annotation.Box, XAxisID: xid, YAxisID: yid,
-			BackgroundColor: &types.RGBA{0, 0, 0, 200},
-			XMin:            1, XMax: 4, YMin: -0.6, YMax: 0.77, BorderColor: &types.RGBA{200, 200, 0, 200}, BorderWidth: 3, Label: &annotation.Label{FontSize: 12, FontFamily: "sans-serif",
-				Position:  "center",
-				FontColor: &types.RGBA{255, 0, 0, 200},
-				Enabled:   types.True, Content: "boxed"}})
 
 	wtr, err := os.Create("test-chart-anno.html")
 	if err != nil {

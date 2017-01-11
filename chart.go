@@ -8,7 +8,6 @@ import (
 	"html/template"
 	"math"
 
-	"github.com/brentp/go-chartjs/annotation"
 	"github.com/brentp/go-chartjs/types"
 )
 
@@ -346,17 +345,12 @@ type Title struct {
 	Text    string     `json:"text,omitempty"`
 }
 
-type Annotation struct {
-	Annotations []annotation.Annotation `json:"annotations,omitempty"`
-}
-
 // Options wraps the chartjs "options"
 type Options struct {
 	Option
-	Scales     Axes       `json:"scales,omitempty"`
-	Annotation Annotation `json:"annotation,omitempty"`
-	Legend     *Legend    `json:"legend,omitempty"`
-	Tooltip    *Tooltip   `json:"tooltips,omitempty"`
+	Scales  Axes     `json:"scales,omitempty"`
+	Legend  *Legend  `json:"legend,omitempty"`
+	Tooltip *Tooltip `json:"tooltips,omitempty"`
 }
 
 // Tooltip wraps chartjs "tooltips".

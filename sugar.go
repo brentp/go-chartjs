@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"html/template"
 	"io"
-
-	"github.com/brentp/go-chartjs/annotation"
 )
 
 // this file implements some syntactic sugar for creating charts
@@ -14,7 +12,7 @@ import (
 var JQuery = "https://code.jquery.com/jquery-2.2.4.min.js"
 
 // ChartJS holds the path to hosted ChartJS
-var ChartJS = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.bundle.js"
+var ChartJS = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.js"
 
 const tmpl = `<!DOCTYPE html>
 <html>
@@ -73,7 +71,6 @@ func SaveCharts(w io.Writer, tmap map[string]interface{}, charts ...Chart) error
 	if _, ok := tmap["ChartJS"]; !ok {
 		tmap["ChartJS"] = ChartJS
 	}
-	tmap["extra"] = template.JS(annotation.AnnotationSrc043)
 	if _, ok := tmap["custom"]; !ok {
 		tmap["custom"] = ""
 	}
