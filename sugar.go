@@ -74,7 +74,10 @@ func SaveCharts(w io.Writer, tmap map[string]interface{}, charts ...Chart) error
 	if _, ok := tmap["custom"]; !ok {
 		tmap["custom"] = ""
 	}
-	t, err := template.New("chartjs").Parse(tmpl)
+	if _, ok := tmap["template"]; !ok {
+		tmap["template"] = tmpl
+	}
+	t, err := template.New("chartjs").Parse(tmap["template"].(string))
 	if err != nil {
 		return err
 	}
