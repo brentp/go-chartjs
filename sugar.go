@@ -27,7 +27,7 @@ const tmpl = `<!DOCTYPE html>
 	{{ $height := index . "height" }}
 	{{ $width := index . "width" }}
 	{{ range $i, $json := index . "charts" }}
-        <canvas id="canvas{{ $i }}" height="{{ $height }}" width="{{ $width }}"></canvas>
+	<canvas id="canvas{{ $i }}" style="height:{{ $height }}px;width:{{ $width }}px"></canvas>
 		<hr>
 	{{ end }}
     </body>
