@@ -30,6 +30,7 @@ const tmpl = `<!DOCTYPE html>
 	<canvas id="canvas{{ $i }}" style="height:{{ $height }}px;width:{{ $width }}px"></canvas>
 		<hr>
 	{{ end }}
+	{{ index . "customHTML" }}
     </body>
     <script>
 	Chart.defaults.line.cubicInterpolationMode = 'monotone';
@@ -83,6 +84,9 @@ func SaveCharts(w io.Writer, tmap map[string]interface{}, charts ...Chart) error
 	}
 	if _, ok := tmap["custom"]; !ok {
 		tmap["custom"] = ""
+	}
+	if _, ok := tmap["customHTML"]; !ok {
+		tmap["customHTML"] = ""
 	}
 	if _, ok := tmap["template"]; !ok {
 		tmap["template"] = tmpl
