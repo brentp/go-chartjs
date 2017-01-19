@@ -64,6 +64,16 @@ func SaveCharts(w io.Writer, tmap map[string]interface{}, charts ...Chart) error
 		}
 		jscharts = append(jscharts, template.JS(cjson))
 	}
+	for k, v := range tmap {
+		if chart, ok := v.(Chart); ok {
+			cjson, err := json.Marshal(chart)
+			if err != nil {
+				return err
+			}
+			tmap[k] = template.JS(cjson)
+		}
+	}
+
 	tmap["charts"] = jscharts
 	if _, ok := tmap["JQuery"]; !ok {
 		tmap["JQuery"] = JQuery
