@@ -69,7 +69,7 @@ type Values interface {
 	Rs() []float64
 }
 
-func marshalValuesJSON(v Values) ([]byte, error) {
+func marshalValuesJSON(v Values, xformat, yformat string) ([]byte, error) {
 	xs, ys, rs := v.Xs(), v.Ys(), v.Rs()
 	if len(xs) == 0 {
 		if len(rs) != 0 {
@@ -91,9 +91,9 @@ func marshalValuesJSON(v Values) ([]byte, error) {
 			}
 			y, r := ys[i], rs[i]
 			if math.IsNaN(y) {
-				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + XFloatFormat + ",\"y\": null,\"r\":" + YFloatFormat + "}"), x, r))
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + xformat + ",\"y\": null,\"r\":" + yformat + "}"), x, r))
 			} else {
-				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + XFloatFormat + ",\"y\":" + YFloatFormat + ",\"r\":" + YFloatFormat + "}"), x, y, r))
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + xformat + ",\"y\":" + yformat + ",\"r\":" + yformat + "}"), x, y, r))
 			}
 			if err != nil {
 				return nil, err
@@ -110,9 +110,9 @@ func marshalValuesJSON(v Values) ([]byte, error) {
 			}
 			y := ys[i]
 			if math.IsNaN(y) {
-				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + XFloatFormat + ",\"y\": null }"), x))
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + xformat + ",\"y\": null }"), x))
 			} else {
-				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + XFloatFormat + ",\"y\":" + YFloatFormat + "}"), x, y))
+				_, err = buf.WriteString(fmt.Sprintf(("{\"x\":" + xformat + ",\"y\":" + yformat + "}"), x, y))
 			}
 			if err != nil {
 				return nil, err
@@ -124,7 +124,7 @@ func marshalValuesJSON(v Values) ([]byte, error) {
 			if i > 0 {
 				buf.WriteRune(',')
 			}
-			_, err := buf.WriteString(fmt.Sprintf(XFloatFormat, x))
+			_, err := buf.WriteString(fmt.Sprintf(xformat, x))
 			if err != nil {
 				return nil, err
 			}
@@ -202,11 +202,24 @@ type Dataset struct {
 	// Axis ID that matches the ID on the Axis where this dataset is to be drawn.
 	XAxisID string `json:"xAxisID,omitempty"`
 	YAxisID string `json:"yAxisID,omitempty"`
+
+	// set the formatter for the data, e.g. "%.2f"
+	// these are not exported in the json, just used to determine the decimals of precision to show
+	XFloatFormat string `json:"-"`
+	YFloatFormat string `json:"-"`
 }
 
 // MarshalJSON implements json.Marshaler interface.
 func (d Dataset) MarshalJSON() ([]byte, error) {
-	o, err := marshalValuesJSON(d.Data)
+	xf, yf := d.XFloatFormat, d.YFloatFormat
+	if xf == "" {
+		xf = XFloatFormat
+	}
+	if yf == "" {
+		yf = YFloatFormat
+	}
+
+	o, err := marshalValuesJSON(d.Data, xf, yf)
 	// avoid recursion by creating an alias.
 	type alias Dataset
 	buf, err := json.Marshal(alias(d))
