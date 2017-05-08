@@ -12,7 +12,7 @@ import (
 var JQuery = "https://code.jquery.com/jquery-2.2.4.min.js"
 
 // ChartJS holds the path to hosted ChartJS
-var ChartJS = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.js"
+var ChartJS = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.js"
 
 const tmpl = `<!DOCTYPE html>
 <html>
