@@ -3,7 +3,7 @@ chartjs
 
 go wrapper for [chartjs](http://chartjs.org)
 
-[![GoDoc] (https://godoc.org/github.com/brentp/go-chartjs?status.png)](https://godoc.org/github.com/brentp/go-chartjs)
+[![GoDoc](https://godoc.org/github.com/brentp/go-chartjs?status.png)](https://godoc.org/github.com/brentp/go-chartjs)
 [![Build Status](https://travis-ci.org/brentp/go-chartjs.svg)](https://travis-ci.org/brentp/go-chartjs)
 
 
